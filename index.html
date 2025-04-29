@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMS Security - Condo Vehicle Registration</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1559139049-5a372b25e4b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      transition: background-color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    body.dark {
+      background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url('https://images.unsplash.com/photo-1559139049-5a372b25e4b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+      border-radius: 50%;
+      margin-right: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo::before {
+      content: 'SMS';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .theme-toggle {
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #fff;
+      transition: transform 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: rotate(180deg);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 40px 24px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #d1d5db;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      width: 100%;
+      max-width: 800px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      animation: slide-up 0.5s ease-out;
+    }
+
+    body.dark .card {
+      background: rgba(31, 41, 55, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 12px;
+      text-align: center;
+      background: linear-gradient(90deg, #d4af37, #f4c430);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.dark .card h2 {
+      color: #e5e7eb;
+    }
+
+    .card p.subtitle {
+      font-size: 16px;
+      color: #6b7280;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    body.dark .card p.subtitle {
+      color: #9ca3af;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #d4af37, #f4c430);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.dark .section-title {
+      color: #d1d5db;
+    }
+
+    .section-title .number {
+      width: 28px;
+      height: 28px;
+      background: rgba(212, 175, 55, 0.1);
+      color: #d4af37;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      margin-right: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark .section-title .number {
+      background: rgba(244, 196, 48, 0.1);
+      color: #f4c430;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    label {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      font-size: 14px;
+      color: #6b7280;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    body.dark label {
+      color: #9ca3af;
+    }
+
+    input:focus + label,
+    input:not(:placeholder-shown) + label,
+    select:focus + label,
+    select:not([value=""]) + label {
+      top: -10px;
+      left: 12px;
+      font-size: 12px;
+      color: #d4af37;
+      background: #fff;
+      padding: 0 4px;
+    }
+
+    body.dark input:focus + label,
+    body.dark input:not(:placeholder-shown) + label,
+    body.dark select:focus + label,
+    body.dark select:not([value=""]) + label {
+      color: #f4c430;
+      background: #1f2937;
+    }
+
+    label .required {
+      color: #ef4444;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 14px;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    body.dark input,
+    body.dark select {
+      background: rgba(75, 85, 99, 0.8);
+      border-color: #6b7280;
+      color: #e5e7eb;
+    }
+
+    input:focus, select:focus {
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    body.dark input:focus,
+    body.dark select:focus {
+      border-color: #f4c430;
+      box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.2);
+      background: rgba(75, 85, 99, 1);
+    }
+
+    input.error, select.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .error-message {
+      font-size: 12px;
+      color: #ef4444;
+      margin-top: 4px;
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+    }
+
+    .address-box {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      background: rgba(243, 244, 246, 0.8);
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+    }
+
+    body.dark .address-box {
+      background: rgba(75, 85, 99, 0.8);
+      border-color: #6b7280;
+    }
+
+    .address-box span {
+      font-size: 14px;
+      color: #1f2937;
+    }
+
+    body.dark .address-box span {
+      color: #e5e7eb;
+    }
+
+    .address-box .emoji {
+      margin-right: 8px;
+      color: #6b7280;
+    }
+
+    body.dark .address-box .emoji {
+      color: #9ca3af;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+      justify-content: center;
+    }
+
+    .btn {
+      flex: 0 1 200px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, #d4af37, #f4c430);
+      color: #1f2937;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(45deg, #b8972e, #d4af37);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-primary:disabled {
+      background: #f4c430;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(229, 231, 235, 0.8);
+      color: #1f2937;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark .btn-secondary {
+      background: rgba(75, 85, 99, 0.8);
+      color: #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(209, 213, 219, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark .btn-secondary:hover {
+      background: rgba(107, 114, 128, 0.8);
+    }
+
+    .btn-secondary .eye-icon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+
+    .reset-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #6b7280;
+      margin-top: 20px;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    body.dark .reset-link {
+      color: #9ca3af;
+    }
+
+    .reset-link:hover {
+      color: #d4af37;
+      text-decoration: underline;
+    }
+
+    body.dark .reset-link:hover {
+      color: #f4c430;
+    }
+
+    .reset-link .refresh-icon {
+      margin-right: 6px;
+      font-size: 14px;
+    }
+
+    .notification {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      text-align: center;
+      animation: fade-in 0.5s ease-in-out;
+    }
+
+    .notification.success {
+      background: rgba(220, 252, 231, 0.9);
+      color: #166534;
+    }
+
+    .notification.error {
+      background: rgba(254, 226, 226, 0.9);
+      color: #991b1b;
+    }
+
+    .preview-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      animation: fade-in 0.3s ease-in-out;
+    }
+
+    .preview-content {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 24px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: slide-up 0.5s ease-out;
+    }
+
+    body.dark .preview-content {
+      background: rgba(31, 41, 55, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .preview-content h3 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 20px;
+      text-align: center;
+      background: linear-gradient(90deg, #d4af37, #f4c430);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.dark .preview-content h3 {
+      color: #e5e7eb;
+    }
+
+    .preview-content p {
+      font-size: 14px;
+      color: #1f2937;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    body.dark .preview-content p {
+      color: #e5e7eb;
+    }
+
+    .preview-content button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background: linear-gradient(45deg, #d4af37, #f4c430);
+      color: #1f2937;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .preview-content button:hover {
+      background: linear-gradient(45deg, #b8972e, #d4af37);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+    }
+
+    .features {
+      padding: 40px 24px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .features h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 24px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: #d1d5db;
+    }
+
+    footer {
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #d1d5db;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    footer .footer-links {
+      margin-top: 12px;
+    }
+
+    footer a {
+      color: #d4af37;
+      text-decoration: none;
+      margin: 0 12px;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #f4c430;
+      text-decoration: underline;
+    }
+
+    @keyframes slide-up {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .card {
+        padding: 24px;
+        max-width: 100%;
+      }
+
+      .card h2 {
+        font-size: 24px;
+      }
+
+      .card p.subtitle {
+        font-size: 14px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .buttons {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .btn {
+        flex: 1;
+      }
+
+      .features h2 {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 12px 16px;
+      }
+
+      .logo {
+        width: 32px;
+        height: 32px;
+      }
+
+      .logo-text {
+        font-size: 16px;
+      }
+
+      .theme-toggle {
+        font-size: 20px;
+      }
+
+      .hero h1 {
+        font-size: 24px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .card h2 {
+        font-size: 20px;
+      }
+
+      .section-title {
+        font-size: 16px;
+      }
+
+      .section-title .number {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+      }
+
+      footer {
+        font-size: 12px;
+      }
+
+      footer a {
+        margin: 0 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo"></div>
+      <h1 class="logo-text">SMS Security</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+  </header>
+
+  <section class="hero">
+    <h1>Welcome to SMS Security</h1>
+    <p>Secure vehicle registration for your condo with state-of-the-art technology and premium design.</p>
+  </section>
+
+  <main>
+    <div class="card">
+      <h2>Condo Vehicle Registration</h2>
+      <p class="subtitle">Securely register your vehicle for SMS Security at your selected property.</p>
+
+      <div class="section">
+        <h3 class="section-title">
+          <span class="number">1</span>
+          Personal Information
+        </h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <input type="text" id="fullName" placeholder=" " oninput="clearError('fullName')">
+            <label for="fullName">Full Name <span class="required">*</span></label>
+            <p class="error-message" id="fullName-error"></p>
+          </div>
+          <div class="form-group">
+            <input type="text" id="phoneNumber" placeholder=" " oninput="clearError('phoneNumber')">
+            <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+            <p class="error-message" id="phoneNumber-error"></p>
+          </div>
+          <div class="form-group">
+            <input type="text" id="unitNumber" placeholder=" " oninput="clearError('unitNumber')">
+            <label for="unitNumber">Unit Number <span class="required">*</span></label>
+            <p class="error-message" id="unitNumber-error"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">
+          <span class="number">2</span>
+          Property Address
+        </h3>
+        <div class="form-group">
+          <select id="propertyAddress" oninput="clearError('propertyAddress')">
+            <option value="">Select a property</option>
+            <option value="1574 Queen St.">1574 Queen St.</option>
+            <option value="123 King St.">123 King St.</option>
+            <option value="456 Park Ave.">456 Park Ave.</option>
+          </select>
+          <label for="propertyAddress">Select Property <span class="required">*</span></label>
+          <p class="error-message" id="propertyAddress-error"></p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">
+          <span class="number">3</span>
+          Vehicle Information
+        </h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <input type="text" id="licensePlate" placeholder=" " oninput="clearError('licensePlate')">
+            <label for="licensePlate">License Plate <span class="required">*</span></label>
+            <p class="error-message" id="licensePlate-error"></p>
+          </div>
+          <div class="form-group">
+            <input type="text" id="vehicleMake" placeholder=" " oninput="clearError('vehicleMake')">
+            <label for="vehicleMake">Vehicle Make <span class="required">*</span></label>
+            <p class="error-message" id="vehicleMake-error"></p>
+          </div>
+          <div class="form-group">
+            <input type="text" id="vehicleColor" placeholder=" " oninput="clearError('vehicleColor')">
+            <label for="vehicleColor">Vehicle Color <span class="required">*</span></label>
+            <p class="error-message" id="vehicleColor-error"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-primary" onclick="registerVehicle()" id="register-btn">Register Vehicle</button>
+        <button class="btn btn-secondary" onclick="showPreview()">
+          <span class="eye-icon">👁️</span>
+          Preview Details
+        </button>
+      </div>
+
+      <a href="#" class="reset-link" onclick="resetForm(); return false;">
+        <span class="refresh-icon">🔄</span>
+        Reset Form
+      </a>
+
+      <div class="notification" id="notification" style="display: none;"></div>
+
+      <div class="preview-modal" id="preview-modal" style="display: none;">
+        <div class="preview-content">
+          <h3>Registration Preview</h3>
+          <p><strong>Full Name:</strong> <span id="preview-fullName"></span></p>
+          <p><strong>Phone Number:</strong> <span id="preview-phoneNumber"></span></p>
+          <p><strong>Unit Number:</strong> <span id="preview-unitNumber"></span></p>
+          <p><strong>Property Address:</strong> <span id="preview-propertyAddress"></span></p>
+          <p><strong>License Plate:</strong> <span id="preview-licensePlate"></span></p>
+          <p><strong>Vehicle Make:</strong> <span id="preview-vehicleMake"></span></p>
+          <p><strong>Vehicle Color:</strong> <span id="preview-vehicleColor"></span></p>
+          <button onclick="closePreview()">Close</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section class="features">
+    <h2>Why Choose SMS Security?</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Advanced Security</h3>
+        <p>State-of-the-art technology to keep your vehicle safe.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Condo Integration</h3>
+        <p>Seamless integration with your condo management system.</p>
+      </div>
+      <div class="feature-card">
+        <h3>24/7 Support</h3>
+        <p>Round-the-clock assistance for all your needs.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 SMS Security. All rights reserved. Developed by Jagroop Singh.</p>
+    <div class="footer-links">
+      <a href="https://smssecurity.ca">Visit smssecurity.ca</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Contact Us</a>
+    </div>
+  </footer>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+    let registrations = JSON.parse(localStorage.getItem('registrations')) || [];
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const newTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+      localStorage.setItem('theme', newTheme);
+      document.querySelector('.theme-toggle').innerText = newTheme === 'light' ? '🌙' : '☀️';
+    }
+
+    function clearError(field) {
+      document.getElementById(`${field}-error`).innerText = '';
+      document.getElementById(field).classList.remove('error');
+    }
+
+    function validateForm() {
+      let isValid = true;
+      const fields = ['fullName', 'phoneNumber', 'unitNumber', 'propertyAddress', 'licensePlate', 'vehicleMake', 'vehicleColor'];
+
+      fields.forEach(field => {
+        const value = document.getElementById(field).value;
+        const errorElement = document.getElementById(`${field}-error`);
+        const inputElement = document.getElementById(field);
+
+        if (!value) {
+          errorElement.innerText = `${field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} is required`;
+          inputElement.classList.add('error');
+          isValid = false;
+        } else {
+          errorElement.innerText = '';
+          inputElement.classList.remove('error');
+        }
+      });
+
+      return isValid;
+    }
+
+    async function generateQRCode(text) {
+      const canvas = document.createElement('canvas');
+      await QRCode.toCanvas(canvas, text, { width: 100 });
+      return canvas.toDataURL('image/png');
+    }
+
+    async function generatePDF(registration) {
+      const doc = new jsPDF();
+      const qrCodeData = await generateQRCode(JSON.stringify(registration));
+
+      doc.setFontSize(16);
+      doc.text('SMS Security Vehicle Registration', 20, 20);
+      doc.setFontSize(12);
+      doc.text(`Registration Number: ${registration.id}`, 20, 30);
+      doc.text(`Full Name: ${registration.fullName}`, 20, 40);
+      doc.text(`Phone Number: ${registration.phoneNumber}`, 20, 50);
+      doc.text(`Unit Number: ${registration.unitNumber}`, 20, 60);
+      doc.text(`Property Address: ${registration.propertyAddress}`, 20, 70);
+      doc.text(`License Plate: ${registration.licensePlate}`, 20, 80);
+      doc.text(`Vehicle Make: ${registration.vehicleMake}`, 20, 90);
+      doc.text(`Vehicle Color: ${registration.vehicleColor}`, 20, 100);
+      doc.addImage(qrCodeData, 'PNG', 20, 110, 30, 30);
+      doc.setFontSize(10);
+      doc.setTextColor(150);
+      doc.text('SMS Security Watermark', 20, 150);
+
+      return doc.output('blob');
+    }
+
+    async function registerVehicle() {
+      if (!validateForm()) return;
+
+      const registerBtn = document.getElementById('register-btn');
+      registerBtn.disabled = true;
+      registerBtn.innerText = 'Registering...';
+
+      const registration = {
+        id: Date.now().toString(),
+        fullName: document.getElementById('fullName').value,
+        phoneNumber: document.getElementById('phoneNumber').value,
+        unitNumber: document.getElementById('unitNumber').value,
+        propertyAddress: document.getElementById('propertyAddress').value,
+        licensePlate: document.getElementById('licensePlate').value,
+        vehicleMake: document.getElementById('vehicleMake').value,
+        vehicleColor: document.getElementById('vehicleColor').value,
+        date: new Date().toISOString(),
+      };
+
+      registrations.push(registration);
+      localStorage.setItem('registrations', JSON.stringify(registrations));
+
+      const pdfBlob = await generatePDF(registration);
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `registration_${registration.id}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showNotification('success', 'Registration successful! PDF downloaded.');
+
+      registerBtn.disabled = false;
+      registerBtn.innerText = 'Register Vehicle';
+    }
+
+    function showPreview() {
+      document.getElementById('preview-fullName').innerText = document.getElementById('fullName').value;
+      document.getElementById('preview-phoneNumber').innerText = document.getElementById('phoneNumber').value;
+      document.getElementById('preview-unitNumber').innerText = document.getElementById('unitNumber').value;
+      document.getElementById('preview-propertyAddress').innerText = document.getElementById('propertyAddress').value;
+      document.getElementById('preview-licensePlate').innerText = document.getElementById('licensePlate').value;
+      document.getElementById('preview-vehicleMake').innerText = document.getElementById('vehicleMake').value;
+      document.getElementById('preview-vehicleColor').innerText = document.getElementById('vehicleColor').value;
+      document.getElementById('preview-modal').style.display = 'flex';
+    }
+
+    function closePreview() {
+      document.getElementById('preview-modal').style.display = 'none';
+    }
+
+    function resetForm() {
+      const fields = ['fullName', 'phoneNumber', 'unitNumber', 'propertyAddress', 'licensePlate', 'vehicleMake', 'vehicleColor'];
+      fields.forEach(field => {
+        if (field === 'propertyAddress') {
+          document.getElementById(field).value = '';
+        } else {
+          document.getElementById(field).value = '';
+        }
+        clearError(field);
+      });
+      closePreview();
+    }
+
+    function showNotification(type, message) {
+      const notification = document.getElementById('notification');
+      notification.className = `notification ${type}`;
+      notification.innerText = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        document.querySelector('.theme-toggle').innerText = '☀️';
+      }
+
+      if (registrations.length > 0) {
+        const lastRegistration = registrations[registrations.length - 1];
+        document.getElementById('fullName').value = lastRegistration.fullName;
+        document.getElementById('phoneNumber').value = lastRegistration.phoneNumber;
+        document.getElementById('unitNumber').value = lastRegistration.unitNumber;
+        document.getElementById('propertyAddress').value = lastRegistration.propertyAddress;
+        document.getElementById('licensePlate').value = lastRegistration.licensePlate;
+        document.getElementById('vehicleMake').value = lastRegistration.vehicleMake;
+        document.getElementById('vehicleColor').value = lastRegistration.vehicleColor;
+      }
+    };
+  </script>
+</body>
+</html>
